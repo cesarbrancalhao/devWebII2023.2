@@ -1,38 +1,46 @@
-<?php 
+<?php
 
 include_once("persistencia.php");
 
-//Caputura o ID do livro como parâmetro GET
-$id = isset($_GET['id']) ? $_GET['id'] : null;
+//Verificar se o ID do livro foi enviado/recebido
+$id = "";
+if(isset($_GET['id']))
+    $id = $_GET['id'];
+
 if(! $id) {
-    echo "ID não encontrado!<br>";
+    echo "ID do livro não informado!";
+    echo "<br>";
     echo "<a href='livros.php'>Voltar</a>";
     exit;
 }
 
-//Carrega os livros já cadastrados
+//Carregar o array de livros do arquivo
 $livros = buscarDados();
 
-//Busca o livro, recuprando seu ID
+//Encontrar o índice do livro
 $index = -1;
 for($i=0; $i<count($livros); $i++) {
-    if($livros[$i]['id'] == $id) {
+    if($id == $livros[$i]['id']) {
         $index = $i;
         break;
     }
 }
 
+//Verificar se o livro foi encontrado
 if($index < 0) {
-    echo "ID não encontrado!<br>";
+    echo "ID do livro não encontrado!";
+    echo "<br>";
     echo "<a href='livros.php'>Voltar</a>";
     exit;
 }
 
-//Exclui o livro do array
+//Excluir o livro
 array_splice($livros, $index, 1);
+//print_r($livros);
 
-//Persiste os dados no arquivo
-salvarDados($livros, "livros.json"); 
+//Persisitir o array sem o livro excluido
+salvarDados($livros);
 
-//Redireciona novamente para o formulário/listagem
+//Redirecionar a página
 header("location: livros.php");
+
